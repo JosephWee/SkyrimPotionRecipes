@@ -1,0 +1,7 @@
+"ID","Name","Effect1","Effect2","Effect3","Effect4","Description"
+"SXXXXXX0","Ingredient 0's Name","restore stamina","fortify health","fortify one-handed","damage magicka regen","Sample Description: Collected from various types of..."
+"SXXXXXX1","Ingredient 1's Name","restore health","fortify conjuration","fortify health","damage magicka regen","Leave blank if description is unavailiable"
+"SXXXXXX2","Ingredient 2's Name","restore health","fortify health","damage stamina regen","lingering damage magicka",
+"SXXXXXX3","Ingredient 3's Name","restore magicka","fortify block","paralysis","fortify magicka",
+"SXXXXXX4","Ingredient 4's Name","restore magicka","fortify destruction","fortify magicka","damage health",
+"SXXXXXX5","Ingredient 5's Name","restore stamina","fortify magicka","damage stamina regen","waterbreathing",

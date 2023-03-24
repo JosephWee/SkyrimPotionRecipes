@@ -1,0 +1,7 @@
+"ID","Name","Effect1","Effect2","Effect3","Effect4","Description"
+"CCXXXXX0","Ingredient 0's Name","restore health","regenerate health","fortify health","cure poison","Sample Description: One of the Rare Curios sold by Khajiit trade caravans"
+"CCXXXXX1","Ingredient 1's Name","restore health","fortify health","fortify one-handed","fortify two-handed","Leave blank if description is unavailiable"
+"CCXXXXX2","Ingredient 2's Name","restore health","fortify health","fortify stamina","regenerate health",
+"CCXXXXX3","Ingredient 3's Name","restore magicka","fortify magicka","night eye","invisibility",
+"CCXXXXX4","Ingredient 4's Name","restore stamina","fortify magicka","damage stamina regen","restore health",
+"CCXXXXX5","Ingredient 5's Name","restore magicka","fortify health","fortify stamina","waterbreathing",

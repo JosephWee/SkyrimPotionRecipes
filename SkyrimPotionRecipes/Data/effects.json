@@ -1,0 +1,76 @@
+{
+    "Poison": [
+        "damage health",
+        "damage magicka",
+        "damage magicka regen",
+        "damage stamina",
+        "damage stamina regen",
+        "fear",
+        "frenzy",
+        "lingering damage health",
+        "lingering damage magicka",
+        "lingering damage stamina",
+        "paralysis",
+        "ravage health",
+        "ravage magicka",
+        "ravage stamina",
+        "slow",
+        "weakness to fire",
+        "weakness to frost",
+        "weakness to magic",
+        "weakness to poison",
+        "weakness to shock"
+    ],
+    "Cure": [
+        "cure disease",
+        "cure poison"
+    ],
+    "Health": [
+        "fortify health",
+        "regenerate health",
+        "restore health"
+    ],
+    "Magicka": [
+        "fortify magicka",
+        "regenerate magicka",
+        "restore magicka"
+    ],
+    "Stamina": [
+        "fortify stamina",
+        "regenerate stamina",
+        "restore stamina"
+    ],
+    "Resist": [
+        "resist fire",
+        "resist frost",
+        "resist magic",
+        "resist poison",
+        "resist shock"
+    ],
+    "Others": [
+        "fortify alteration",
+        "fortify barter",
+        "fortify block",
+        "fortify carry weight",
+        "fortify conjuration",
+        "fortify destruction",
+        "fortify enchanting",
+        "fortify heavy armor",
+        "fortify illusion",
+        "fortify light armor",
+        "fortify lockpicking",
+        "fortify marksman",
+        "fortify one-handed",
+        "fortify persuasion",
+        "fortify pickpocket",
+        "fortify restoration",
+        "fortify smithing",
+        "fortify sneak",
+        "fortify two-handed",
+        "invisibility",
+        "light",
+        "night eye",
+        "spell absorption",
+        "waterbreathing"
+    ]
+}
