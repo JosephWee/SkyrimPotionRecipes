@@ -25,10 +25,12 @@ if (!string.IsNullOrEmpty(rootPath))
 {
     string pathAlchemyIngredientsCreationClub = Path.Combine(rootPath, "Data", "Alchemy Ingredients - Creation Club.csv");
     string pathAlchemyIngredientsStandard = Path.Combine(rootPath, "Data", "Alchemy Ingredients - Standard.csv");
+    string pathEffectsJson = Path.Combine(rootPath, "Data", "effects.json");
 
     SkyrimPotionRecipes.PotionCreator potionCreator = new SkyrimPotionRecipes.PotionCreator();
     potionCreator.AddIngredientFile(pathAlchemyIngredientsCreationClub);
     potionCreator.AddIngredientFile(pathAlchemyIngredientsStandard);
+    potionCreator.AddEffectFile(pathEffectsJson);
 
     IMemoryCache cache = app.Services.GetRequiredService<IMemoryCache>();
     cache.Set("PotionCreator", potionCreator);
@@ -38,6 +40,7 @@ if (!string.IsNullOrEmpty(rootPath))
 
     Assert.IsNotNull(potionCreatorOut);
     Assert.True(potionCreatorOut.Ingredients.Count > 0);
+    Assert.True(potionCreatorOut.Effects.Keys.Count() > 0);
 }
 
 app.UseHttpsRedirection();

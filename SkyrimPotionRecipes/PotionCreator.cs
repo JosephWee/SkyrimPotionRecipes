@@ -4,6 +4,7 @@
     using System.Web;
     using System.Text.Json;
     using System.Collections.Generic;
+    using System.Collections.Immutable;
 
     public class PotionCreator
     {
@@ -13,6 +14,15 @@
             get
             {
                 return _Ingredients.AsReadOnly();
+            }
+        }
+
+        protected ImmutableDictionary<string, IReadOnlyCollection<string>> _Effects = null;
+        public ImmutableDictionary<string, IReadOnlyCollection<string>> Effects
+        {
+            get
+            {
+                return _Effects;
             }
         }
 
@@ -66,13 +76,28 @@
 
         public void AddEffectFile(string path)
         {
-            //if (File.Exists(path))
-            //    using (var file = File.OpenText(path))
-            //    {
-            //        string content = file.ReadToEnd();
-            //        JsonSerializer.Deserialize(content, typeof(Ingredient));
+            if (File.Exists(path))
+                using (var file = File.OpenText(path))
+                {
+                    string content = file.ReadToEnd();
+                    Dictionary<string, string[]> dictionary =
+                        JsonSerializer.Deserialize(
+                            content,
+                            typeof(Dictionary<string,string[]>)
+                        ) as Dictionary<string, string[]>;
 
-            //    }
+                    Dictionary<string, IReadOnlyCollection<string>> effects = new Dictionary<string, IReadOnlyCollection<string>>();
+                    if (dictionary != null)
+                    {
+                        foreach (KeyValuePair<string, string[]> item in dictionary)
+                        {
+                            List<string> list = item.Value.Select(x => x.Trim().ToLower()).ToList();
+                            effects.Add(item.Key, list.AsReadOnly());
+                        }
+                    }
+
+                    _Effects = effects.ToImmutableDictionary<string, IReadOnlyCollection<string>>();
+                }
         }
     }
 }
