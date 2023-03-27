@@ -9,7 +9,7 @@
     public class PotionCreator
     {
         protected List<Ingredient> _Ingredients = new List<Ingredient>();
-        public IReadOnlyList<Ingredient> Ingredients
+        public IReadOnlyCollection<Ingredient> Ingredients
         {
             get
             {
@@ -17,7 +17,7 @@
             }
         }
 
-        protected ImmutableDictionary<string, IReadOnlyCollection<string>> _Effects = null;
+        protected ImmutableDictionary<string, IReadOnlyCollection<string>> _Effects = new Dictionary<string,IReadOnlyCollection<string>>().ToImmutableDictionary();
         public ImmutableDictionary<string, IReadOnlyCollection<string>> Effects
         {
             get
@@ -80,23 +80,25 @@
                 using (var file = File.OpenText(path))
                 {
                     string content = file.ReadToEnd();
-                    Dictionary<string, string[]> dictionary =
+                    Dictionary<string, string[]>? dictionary =
                         JsonSerializer.Deserialize(
                             content,
                             typeof(Dictionary<string,string[]>)
                         ) as Dictionary<string, string[]>;
 
-                    Dictionary<string, IReadOnlyCollection<string>> effects = new Dictionary<string, IReadOnlyCollection<string>>();
                     if (dictionary != null)
                     {
+                        Dictionary<string, IReadOnlyCollection<string>> effects =
+                            new Dictionary<string, IReadOnlyCollection<string>>();
+
                         foreach (KeyValuePair<string, string[]> item in dictionary)
                         {
                             List<string> list = item.Value.Select(x => x.Trim().ToLower()).ToList();
                             effects.Add(item.Key, list.AsReadOnly());
                         }
-                    }
 
-                    _Effects = effects.ToImmutableDictionary<string, IReadOnlyCollection<string>>();
+                        _Effects = effects.ToImmutableDictionary<string, IReadOnlyCollection<string>>();
+                    }
                 }
         }
     }

@@ -35,12 +35,12 @@ if (!string.IsNullOrEmpty(rootPath))
     IMemoryCache cache = app.Services.GetRequiredService<IMemoryCache>();
     cache.Set("PotionCreator", potionCreator);
 
-    SkyrimPotionRecipes.PotionCreator? potionCreatorOut = null;
-    cache.TryGetValue("PotionCreator", out potionCreatorOut);
+    //SkyrimPotionRecipes.PotionCreator? potionCreatorOut = null;
+    //cache.TryGetValue("PotionCreator", out potionCreatorOut);
 
-    Assert.IsNotNull(potionCreatorOut);
-    Assert.True(potionCreatorOut.Ingredients.Count > 0);
-    Assert.True(potionCreatorOut.Effects.Keys.Count() > 0);
+    //Assert.IsNotNull(potionCreatorOut);
+    //Assert.True(potionCreatorOut.Ingredients.Count > 0);
+    //Assert.True(potionCreatorOut.Effects.Keys.Count() > 0);
 }
 
 app.UseHttpsRedirection();
