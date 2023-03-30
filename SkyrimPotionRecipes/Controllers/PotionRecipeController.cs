@@ -33,6 +33,24 @@ namespace SkyrimPotionRecipes.Controllers
             return new NotFoundResult();
         }
 
+        [HttpGet("Recipes")]
+        public ActionResult GetPotionRecipes()
+        {
+            var cache =
+                HttpContext.RequestServices.GetRequiredService(typeof(IMemoryCache))
+                as IMemoryCache;
+            if (cache != null)
+            {
+                PotionCreator? potionCreator = null;
+                if (cache.TryGetValue<PotionCreator>("PotionCreator", out potionCreator) && potionCreator != null)
+                {
+                    return new OkObjectResult(potionCreator.GetPotionRecipes(new string[] { "resore" }));
+                }
+            }
+
+            return new NotFoundResult();
+        }
+
         [HttpGet("List")]
         public IEnumerable<string> GetPotionList()
         {

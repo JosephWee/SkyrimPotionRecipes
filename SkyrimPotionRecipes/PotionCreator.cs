@@ -85,6 +85,38 @@
             return result;
         }
 
+        protected List<List<PotionEffect>> Combinations(IReadOnlyCollection<PotionEffect> potionEffects, int choose)
+        {
+            List<PotionEffect> effects = potionEffects.Distinct().OrderBy(x => x.Name).ToList();
+
+            if (potionEffects.Count > effects.Count)
+                throw new ArgumentException("There should not be duplicates in the items to choose from.");
+
+            if (choose > effects.Count)
+                throw new ArgumentException("The number of items to pick is larger than the number of unique items to choose from.");
+
+            var results = new List<List<PotionEffect>>();
+            for (int i = 0; (i + choose) < effects.Count; i++)
+            {
+                var permutations = Permutations(potionEffects.Skip(i).Take(choose).ToList());
+                var uniqueCombinations = new Dictionary<string, List<PotionEffect>>();
+
+                foreach (var permutation in permutations)
+                {
+                    var oPermutation = permutation.OrderBy(x => x.Name).ToList();
+                    string key = string.Join("-", oPermutation);
+                    if (!uniqueCombinations.ContainsKey(key))
+                    {
+                        uniqueCombinations.Add(key, oPermutation);
+                    }
+                }
+
+                results.AddRange(uniqueCombinations.Select(x => x.Value));
+            }
+
+            return results;
+        }
+
         public void AddIngredientFile(string path)
         {
             if (File.Exists(path))
@@ -304,6 +336,56 @@
             result.Recipes.AddRange(validRecipes);
 
             return result;
+        }
+
+        public Dictionary<string, PotionRecipes> GetPotionRecipeBook()
+        {
+            var potions = new Dictionary<string, PotionRecipes>();
+
+            // Single effect potions
+            var potionKeys = new string[] { "Cure", "Health", "Magicka", "Stamina", "Resist", "Others" };
+            foreach (var k in _Effects.Keys)
+            {
+                string suffix = "Poison";
+                if (potionKeys.Contains(k))
+                    suffix = "Potion";
+
+                var effectsList = _Effects[k];
+                foreach (var effect in effectsList)
+                {
+                    var pname = $"{effect.Name.ToTitleCase()} {suffix}";
+                    var recipes = GetPotionRecipes(new string[] { effect.Name });
+                    potions.Add(pname, recipes);
+                }
+            }
+
+            // Multiple effect potions
+            var potionGroups = new List<List<string>>();
+            potionGroups.Add(new List<string>() { "Cure" });
+            potionGroups.Add(new List<string>() { "Health" });
+            potionGroups.Add(new List<string>() { "Magicka" });
+            potionGroups.Add(new List<string>() { "Stamina" });
+
+            foreach (var potionGroup in potionGroups)
+            {
+                var effectsList = new List<PotionEffect>();
+
+                foreach (var k in potionGroup)
+                {
+                    effectsList.AddRange(_Effects[k].ToArray());
+                }
+
+                var combinations = Combinations(effectsList, Math.Min(4, effectsList.Count()));
+
+                foreach (var combination in combinations)
+                {
+                    var pname = $"{string.Join(" | ", combination.Select(x => x.Name.ToTitleCase()))} Potion";
+                    if (!potions.ContainsKey(pname))
+                        potions.Add(pname, GetPotionRecipes(combination.Select(x => x.Name).ToArray()));
+                }
+            }
+
+            return potions;
         }
     }
 }
