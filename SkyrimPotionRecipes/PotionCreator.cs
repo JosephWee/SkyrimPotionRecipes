@@ -71,21 +71,33 @@
             if (permutationsByShifting.Count >= numberOfPermuations)
                 return permutationsByShifting;
 
-            List<List<PotionEffect>> result = new List<List<PotionEffect>>();
+            Dictionary<string,List<PotionEffect>> result = new Dictionary<string,List<PotionEffect>>();
             foreach (var permutation in permutationsByShifting)
             {
-                result.Add(permutation);
+                string permKey = string.Join("-", permutation.Select(x => x.Name));
+
+                if (result.ContainsKey(permKey))
+                    continue;
+                else
+                    result.Add(permKey,permutation);
+
                 for (int i = 1; i < permutation.Count; i++)
                 {
                     var newPermutation = new List<PotionEffect>();
                     newPermutation.AddRange(permutation);
                     newPermutation[i - 1] = permutation[i];
                     newPermutation[i] = permutation[i - 1];
-                    result.Add(newPermutation);
+
+                    string npermKey = string.Join("-", newPermutation.Select(x => x.Name));
+
+                    if (result.ContainsKey(npermKey))
+                        continue;
+                    else
+                        result.Add(npermKey, permutation);
                 }
             }
 
-            return result;
+            return result.Select(kv => kv.Value).ToList();
         }
 
         protected List<List<PotionEffect>> Combinations(IReadOnlyCollection<PotionEffect> potionEffects, int choose)
@@ -293,6 +305,7 @@
                 }
                 else
                 {
+                    var e = effectsWanted.Select(x => x.Name).ToList();
                     var chains = new Dictionary<string, List<Ingredient>>();
 
                     for (int index = 0; index < effectsWanted.Count; index++)
@@ -322,16 +335,11 @@
                         }
                     }
 
-                    foreach (var keyValuePair in chains)
-                    {
-                        if (recipe.Ingredients == null)
-                            recipe.Ingredients = keyValuePair.Value;
-                        else
-                            recipe.Ingredients.AddRange(keyValuePair.Value);
-                    }
+                    if (chains.Count(kv => kv.Value.Count > 1) == chains.Count)
+                        recipe.Ingredients = chains.SelectMany(kv => kv.Value).ToList();
                 }
 
-                recipe.Ingredients = recipe.Ingredients.Distinct().OrderBy(x => x.Name).ToList();
+                recipe.Ingredients = recipe.Ingredients.Distinct().OrderBy(x => x.Name).OrderBy(x => x.Name).ToList();
                 recipes.Add(recipe);
             }
 
