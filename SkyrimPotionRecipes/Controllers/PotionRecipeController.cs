@@ -44,18 +44,37 @@ namespace SkyrimPotionRecipes.Controllers
                 PotionCreator? potionCreator = null;
                 if (cache.TryGetValue<PotionCreator>("PotionCreator", out potionCreator) && potionCreator != null)
                 {
-                    return new OkObjectResult(potionCreator.GetPotionRecipes(new string[] { "resore" }));
+                    return new OkObjectResult(potionCreator.GetPotionRecipeBook());
                 }
             }
 
             return new NotFoundResult();
         }
 
-        [HttpGet("List")]
-        public IEnumerable<string> GetPotionList()
+        [HttpPost("Recipe")]
+        public ActionResult GetPotionRecipe(string [] effects)
         {
-            var retVal = new string[] { "Potion of Restore Health", "Potion of Restore Magicka" };
-            return retVal.AsEnumerable<string>();
+            var cache =
+                HttpContext.RequestServices.GetRequiredService(typeof(IMemoryCache))
+                as IMemoryCache;
+
+            if (cache != null)
+            {
+                PotionCreator? potionCreator = null;
+                if (cache.TryGetValue<PotionCreator>("PotionCreator", out potionCreator) && potionCreator != null)
+                {
+                    try
+                    {
+                        var recipes = potionCreator.GetPotionRecipes(effects);
+                        return new OkObjectResult(recipes);
+                    }
+                    catch
+                    {
+                    }
+                }
+            }
+
+            return new NotFoundResult();
         }
     }
 }
