@@ -7,7 +7,7 @@
 
     public static class Extensions
     {
-        public static bool AreEqual<T1,T2>(this List<T1> first, List<T1> second, Func<T1,T2> KeyProperty)
+        public static bool AreListEqual<T1,T2>(this List<T1> first, List<T1> second, Func<T1,T2> KeyProperty)
         {
             if (first.Count != second.Count)
                 return false;
@@ -36,7 +36,7 @@
 
         public static string ToTitleCase(this string str)
         {
-            string[] substrings = Regex.Split(str, @"\w+\s+\w+");
+            string[] substrings = Regex.Split(str, @"\s+");
             List<string> ostring = new List<string>();
             foreach (string substring in substrings)
             {

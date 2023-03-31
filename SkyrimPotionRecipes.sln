@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32602.215
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkyrimPotionRecipes", "SkyrimPotionRecipes\SkyrimPotionRecipes.csproj", "{3C1E7FEE-6498-480E-9C2A-2124401C555E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SkyrimPotionRecipes", "SkyrimPotionRecipes\SkyrimPotionRecipes.csproj", "{3C1E7FEE-6498-480E-9C2A-2124401C555E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NUnitTestProject", "NUnitTestProject\NUnitTestProject.csproj", "{25E11032-A588-4D7B-8BD0-FBA61B33018D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{3C1E7FEE-6498-480E-9C2A-2124401C555E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3C1E7FEE-6498-480E-9C2A-2124401C555E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3C1E7FEE-6498-480E-9C2A-2124401C555E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{25E11032-A588-4D7B-8BD0-FBA61B33018D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{25E11032-A588-4D7B-8BD0-FBA61B33018D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{25E11032-A588-4D7B-8BD0-FBA61B33018D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{25E11032-A588-4D7B-8BD0-FBA61B33018D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
