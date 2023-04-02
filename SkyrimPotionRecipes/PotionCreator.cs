@@ -178,6 +178,8 @@
                             }
                         }
                     }
+
+                    _Ingredients = _Ingredients.OrderBy(x => x.Name).ToList();
                 }
         }
 
@@ -339,12 +341,12 @@
                         recipe.Ingredients = chains.SelectMany(kv => kv.Value).ToList();
                 }
 
-                recipe.Ingredients = recipe.Ingredients.Distinct().OrderBy(x => x.Name).OrderBy(x => x.Name).ToList();
+                recipe.Ingredients = recipe.Ingredients.Distinct().OrderBy(x => x.Name).ToList();
                 recipes.Add(recipe);
             }
 
             var validRecipes = ValidateRecipes(recipes, effectsWanted);
-            var result = new PotionRecipes();
+            var result = new PotionRecipes() { Effects = effectsWanted.ToList() };
             result.Recipes.AddRange(validRecipes);
 
             return result;
@@ -355,12 +357,12 @@
             var potions = new Dictionary<string, PotionRecipes>();
 
             // Single effect potions
-            var potionKeys = new string[] { "Cure", "Health", "Magicka", "Stamina", "Resist", "Others" };
-            foreach (var k in _Effects.Keys)
+            var effectsKeys = new string[] { "Cure", "Health", "Magicka", "Stamina", "Resist", "Others","Poison" };
+            foreach (var k in effectsKeys)
             {
-                string suffix = "Poison";
-                if (potionKeys.Contains(k))
-                    suffix = "Potion";
+                string suffix = "Potion";
+                if (k == "Poison")
+                    suffix = "Poison";
 
                 var effectsList = _Effects[k];
                 foreach (var effect in effectsList)

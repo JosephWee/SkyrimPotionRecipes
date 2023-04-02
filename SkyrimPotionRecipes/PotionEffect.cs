@@ -9,5 +9,10 @@
         {
             this._Name = name;
         }
+
+        public override string ToString()
+        {
+            return this._Name;
+        }
     }
 }
