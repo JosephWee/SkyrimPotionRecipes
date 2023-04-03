@@ -8,6 +8,7 @@
     using System.Text.Json;
     using System.Text.RegularExpressions;
     using System.Web;
+    using Microsoft.Extensions.Configuration.EnvironmentVariables;
     using NUnit.Framework;
     using SkyrimPotionRecipes.Extensions;
 
@@ -71,15 +72,15 @@
             if (permutationsByShifting.Count >= numberOfPermuations)
                 return permutationsByShifting;
 
-            Dictionary<string,List<PotionEffect>> result = new Dictionary<string,List<PotionEffect>>();
+            Dictionary<string,List<PotionEffect>> permDict = new Dictionary<string,List<PotionEffect>>();
             foreach (var permutation in permutationsByShifting)
             {
                 string permKey = string.Join("-", permutation.Select(x => x.Name));
 
-                if (result.ContainsKey(permKey))
+                if (permDict.ContainsKey(permKey))
                     continue;
                 else
-                    result.Add(permKey,permutation);
+                    permDict.Add(permKey,permutation);
 
                 for (int i = 1; i < permutation.Count; i++)
                 {
@@ -90,14 +91,20 @@
 
                     string npermKey = string.Join("-", newPermutation.Select(x => x.Name));
 
-                    if (result.ContainsKey(npermKey))
+                    if (permDict.ContainsKey(npermKey))
                         continue;
                     else
-                        result.Add(npermKey, permutation);
+                        permDict.Add(npermKey, newPermutation);
                 }
             }
 
-            return result.Select(kv => kv.Value).ToList();
+            List<List<PotionEffect>> result = new List<List<PotionEffect>>();
+            foreach (var permutation in permDict.ToList())
+            {
+                result.Add(permutation.Value);
+            }
+
+            return result;
         }
 
         protected List<List<PotionEffect>> Combinations(IReadOnlyCollection<PotionEffect> potionEffects, int choose)
@@ -230,21 +237,15 @@
                 {
                     bool iscomplete = true;
 
-                    List<PotionEffect> effectsAvailiable = new List<PotionEffect>();
-                    foreach (var ingredient in trecipe.Ingredients)
-                    {
-                        foreach (var effect in ingredient.Effects)
-                        {
-                            if (!effectsAvailiable.Any(x => x.Name == effect.Name))
-                                effectsAvailiable.Add(effect);
-                        }
-                    }
-
-                    effectsAvailiable = effectsAvailiable.OrderBy(x => x.Name).ToList();
-
                     foreach (var effectWanted in effectsWanted)
                     {
-                        if (!effectsAvailiable.Any(x => x.Name == effectWanted.Name))
+                        var matchingIngredients =
+                            trecipe
+                            .Ingredients
+                            .Where(i => i.Effects.Any(e => e.Name == effectWanted.Name))
+                            .ToList();
+
+                        if (matchingIngredients.Count() < 2)
                         {
                             iscomplete = false;
                             break;
@@ -286,70 +287,83 @@
             if (effectsWanted.Count > 4)
                 throw new ArgumentException("desiredEffects supports at most 4 items");
 
-            var effectPermutations = Permutations(effectsWanted);
-            var recipes = new List<PotionRecipe>();
+            var potionRecipes = new PotionRecipes() { Effects = effectsWanted.Select(e => e.Copy()).ToList() };
 
-            for (int permIndex = 0; permIndex < effectPermutations.Count; permIndex++)
+            if (effectsWanted.Count == 1)
             {
-                var potionEffects = effectPermutations[permIndex];
-                var recipe = new PotionRecipe() { Effects = effectsWanted.ToList() };
-
-                if (effectsWanted.Count < 2)
+                var effect = effectsWanted.First();
+                PotionRecipe recipe = null;
+                for (int ingIndex = 0; ingIndex < _Ingredients.Count; ingIndex++)
                 {
-                    for (int index = 0; index < _Ingredients.Count; index++)
+                    var ingredient = _Ingredients[ingIndex];
+                    if (ingredient.Effects.Any(x => x.Name == effect.Name))
                     {
-                        var ingredient = _Ingredients[index];
-                        if (ingredient.Effects.Any(x => x.Name == potionEffects[0].Name))
-                        {
-                            recipe.Ingredients.Add(ingredient);
-                        }
+                        if (recipe == null)
+                            recipe = new PotionRecipe() { Effects = effectsWanted.Select(e => e.Copy()).ToList() };
+                        recipe.Ingredients.Add(ingredient);
                     }
                 }
-                else
+                if (recipe != null)
+                    potionRecipes.Recipes.Add(recipe);
+            }
+            else
+            {
+                var effectPermutations = Permutations(effectsWanted);
+                
+                for (int permIndex = 0; permIndex < effectPermutations.Count; permIndex++)
                 {
-                    var e = effectsWanted.Select(x => x.Name).ToList();
-                    var chains = new Dictionary<string, List<Ingredient>>();
+                    var potionEffects = effectPermutations[permIndex];
+                    var A = new List<PotionRecipe>();
 
-                    for (int index = 0; index < effectsWanted.Count; index++)
+                    for (int linkIndex = 0; linkIndex < potionEffects.Count; linkIndex++)
                     {
-                        var effect1 = index == 0 ? potionEffects[potionEffects.Count - 1] : potionEffects[index - 1];
-                        var effect2 = potionEffects[index];
-                        string chainKey = $"{effect1.Name}-{effect2.Name}";
+                        var effect1 = linkIndex == 0 ? potionEffects[potionEffects.Count - 1] : potionEffects[linkIndex - 1];
+                        var effect2 = potionEffects[linkIndex];
 
-                        for (int ingIndex = 0; ingIndex < _Ingredients.Count; ingIndex++)
+                        var B = new List<PotionRecipe>();
+
+                        for (int ingredientIndex = 0; ingredientIndex < _Ingredients.Count; ingredientIndex++)
                         {
-                            var ingredient = _Ingredients[ingIndex];
+                            var ingredient = _Ingredients[ingredientIndex];
                             if (ingredient.Effects.Any(x => x.Name == effect1.Name)
                                 && ingredient.Effects.Any(x => x.Name == effect2.Name))
                             {
-                                if (chains.ContainsKey(chainKey))
+                                if (linkIndex == 0)
                                 {
-                                    chains[chainKey].Add(ingredient);
+                                    B.Add(
+                                        new PotionRecipe()
+                                        {
+                                            Effects = potionEffects.Select(e => e.Copy()).ToList(),
+                                            Ingredients = new List<Ingredient>() { ingredient.Copy() }
+                                        }
+                                    );
                                 }
                                 else
                                 {
-                                    chains.Add(
-                                        chainKey,
-                                        new List<Ingredient>() { ingredient }
-                                    );
+                                    foreach (var recipe in A.ToList())
+                                    {
+                                        if (!recipe.Ingredients.Any(i => i.Name == ingredient.Name))
+                                        {
+                                            var copy = recipe.Copy();
+                                            copy.Ingredients.Add(ingredient.Copy());
+                                            B.Add(copy);
+                                        }
+                                    }
                                 }
                             }
                         }
+
+                        A = B.Select(pr => pr.Copy()).ToList();
                     }
 
-                    if (chains.Count(kv => kv.Value.Count > 1) == chains.Count)
-                        recipe.Ingredients = chains.SelectMany(kv => kv.Value).ToList();
+                    potionRecipes.Recipes.AddRange(A);
                 }
-
-                recipe.Ingredients = recipe.Ingredients.Distinct().OrderBy(x => x.Name).ToList();
-                recipes.Add(recipe);
             }
 
-            var validRecipes = ValidateRecipes(recipes, effectsWanted);
-            var result = new PotionRecipes() { Effects = effectsWanted.ToList() };
-            result.Recipes.AddRange(validRecipes);
+            var validRecipes = ValidateRecipes(potionRecipes.Recipes, effectsWanted);
+            potionRecipes.Recipes = validRecipes;
 
-            return result;
+            return potionRecipes;
         }
 
         public Dictionary<string, PotionRecipes> GetPotionRecipeBook()

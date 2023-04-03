@@ -12,5 +12,16 @@
             this.Name = string.Empty;
             this.Effects = new List<PotionEffect>();
         }
+
+        public Ingredient Copy()
+        {
+            var copy = new Ingredient()
+            {
+                ID = this.ID,
+                Name = this.Name,
+                Effects = this.Effects.Select(e => e.Copy()).ToList()
+            };
+            return copy;
+        }
     }
 }

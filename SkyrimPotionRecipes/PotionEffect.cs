@@ -14,5 +14,11 @@
         {
             return this._Name;
         }
+
+        public PotionEffect Copy()
+        {
+            var copy = new PotionEffect(this._Name);
+            return copy;
+        }
     }
 }
